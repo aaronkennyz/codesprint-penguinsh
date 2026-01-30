@@ -69,17 +69,50 @@ Include:
 
 ## 6. Setup Instructions
 
-Provide clear steps to run the project locally.
+Postgresql setup:
+```
+1. Open SQL Shell (psql)
 
-```bash
-# Clone the repository
-git clone <repository-url>
+2. CREATE USER rh_user WITH PASSWORD 'rh_pass';
 
-# Navigate to the project directory
-cd <project-folder>
+3. CREATE DATABASE rural_health OWNER rh_user;
 
-# Install dependencies
-<command>
+4. GRANT ALL PRIVILEGES ON DATABASE rural_health TO rh_user;
 
-# Run the project
-<command>
+5. ALTER ROLE rh_user CREATEDB;
+
+6. \q
+
+7. Start the service.
+```
+
+### Terminal 1:
+
+```
+git clone https://github.com/aaronkennyz/codesprint-penguinsh
+
+cd backend
+
+python -m venv .venv
+
+.venv\Scripts\Activate.ps1
+
+pip install -r requirements.txt
+
+alembic upgrade head
+
+python -m app.scripts.seed_demo
+
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+### Terminal 2 (still venv):
+
+cd ..\frontend
+
+python -m http.server 5173
+```
+
+### Open in browser:
+
+http://127.0.0.1:5173/login.html
