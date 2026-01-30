@@ -5,7 +5,7 @@ from typing import List
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    APP_NAME: str = "RuralHealth"
+    APP_NAME: str = "RuralReach"
     APP_ENV: str = "dev"
 
     DATABASE_URL: str

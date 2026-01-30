@@ -1,5 +1,5 @@
-<!doctype html>
-<html>
+﻿<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -7,72 +7,61 @@
   <link rel="stylesheet" href="/assets/styles.css"/>
   <title>Patient</title>
 </head>
-<body class="page page-patient">
-<header>
-  <div class="header-main">
-    <div>
-      <div class="page-title"><span class="dot"></span><h1>Patient</h1></div>
-      <div class="subtitle">Presence code • Camp updates</div>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>Patient</h1>
+        <div class="subtitle">Your presence code</div>
+      </div>
     </div>
-    <div class="header-actions">
+    <div class="row" style="gap:8px">
       <a class="btn ghost" href="/login.html">Back</a>
     </div>
   </div>
-</header>
-<main class="stack">
-  <div class="card">
-    <div class="badge" data-sync>⏳</div>
-    <h2>6-digit presence code</h2>
-    <div id="code" class="code">------</div>
-    <canvas id="qr" style="width:240px;max-width:100%;margin-top:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.14)"></canvas>
-    <p class="small">Show this QR to the clinic worker. QR encodes ONLY the 6 digits.</p>
-  </div>
+</div>
 
-  <div class="card">
-    <h2>Upcoming camps (demo)</h2>
-    <div id="camps" class="list"></div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">6-digit presence code</h2>
+        <span class="badge" data-sync>⏳</span>
+      </div>
+      <div id="code" class="code">------</div>
+      <p class="small">Tell this code to the clinic worker for verification.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Upcoming camps (demo)</h2>
+      </div>
+      <div id="camps" class="list"></div>
+    </div>
   </div>
-</main>
+</div>
 
 <script type="module">
   import "./js/app.js";
   import { setSyncBadge, toast } from "./js/ui.js";
   import { api } from "./js/api.js";
-  import { loadRules } from "./js/rules.js";
 
   setSyncBadge(navigator.onLine ? "✅ Online" : "⚠️ Offline", navigator.onLine ? "ok":"bad");
 
-  // NOTE: To generate TOTP in-browser, you’d need the secret, which we never ship to patient UI.
-  // In production patient app: generate TOTP locally from a device-stored secret set at provisioning time.
-  // This scaffold keeps patient code demo-only (random, changes every 30s) until you add provisioning.
   function genDemo6() {
     return String(Math.floor(Math.random()*1e6)).padStart(6,"0");
-  }
-
-  function drawQr(canvas, text) {
-    // tiny QR placeholder: not a full QR implementation.
-    // In production: use a small offline QR library or Capacitor BarcodeGenerator plugin.
-    const ctx = canvas.getContext("2d");
-    canvas.width = 240; canvas.height = 240;
-    ctx.fillStyle="#fff"; ctx.fillRect(0,0,240,240);
-    ctx.fillStyle="#000";
-    ctx.font="20px ui-monospace";
-    ctx.fillText("QR:", 20, 40);
-    ctx.fillText(text, 20, 80);
-    ctx.font="12px system-ui";
-    ctx.fillText("(Replace with real QR lib)", 20, 110);
   }
 
   let current = "------";
   function tick() {
     current = genDemo6();
     document.querySelector("#code").textContent = current;
-    drawQr(document.querySelector("#qr"), current);
   }
   tick();
   setInterval(tick, 30_000);
 
-  // Camps list: pick village_id=1 for demo. In real patient flow, map person -> village.
   async function loadCamps() {
     if (!navigator.onLine) return;
     const rows = await api("/api/camps?village_id=1&from_date=" + new Date().toISOString().slice(0,10));
@@ -82,9 +71,9 @@
       const div = document.createElement("div");
       div.className="item";
       const maps = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
-      div.innerHTML = `<h3>${c.name} • ${c.date}</h3>
-        <p>${c.address||""} ${c.landmark?(" • "+c.landmark):""}</p>
-        <p><a href="${maps}" target="_blank" rel="noopener">Open in Maps</a> • ${c.contact_name||""} ${c.contact_phone||""}</p>`;
+      div.innerHTML = `<div class="item-title">${c.name} • ${c.date}</div>
+        <div class="small">${c.address||""} ${c.landmark?(" • "+c.landmark):""}</div>
+        <div class="small"><a href="${maps}" target="_blank" rel="noopener">Open in Maps</a> • ${c.contact_name||""} ${c.contact_phone||""}</div>`;
       box.appendChild(div);
     }
   }

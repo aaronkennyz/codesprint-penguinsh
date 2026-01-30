@@ -1,5 +1,5 @@
-<!doctype html>
-<html>
+﻿<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -7,67 +7,95 @@
   <link rel="stylesheet" href="/assets/styles.css"/>
   <title>Screener</title>
 </head>
-<body class="page page-screener">
-<header>
-  <div class="header-main">
-    <div>
-      <div class="page-title"><span class="dot"></span><h1>Screener</h1></div>
-      <div class="subtitle">Quick capture • Offline-friendly</div>
-    </div>
-    <div class="header-actions">
-      <a class="btn ghost" href="/login.html">Back</a>
-    </div>
-  </div>
-</header>
-<main class="stack">
-  <div class="card">
-    <div class="badge" data-sync>⏳</div>
-    <div class="row">
-      <div class="col"><label>Person ID</label><input id="personId" inputmode="numeric"></div>
-      <div class="col"><label>Camp ID (optional)</label><input id="campId" inputmode="numeric"></div>
-    </div>
-    <button id="start" class="secondary">Start Encounter</button>
-    <p class="small">If offline, this will be queued and synced later.</p>
-  </div>
-
-  <div class="card" id="verifyBox" style="display:none">
-    <h2>Presence Verification</h2>
-    <video id="video" playsinline></video>
-    <div class="row">
-      <div class="col"><label>6-digit Code</label><input id="code" class="code" inputmode="numeric" maxlength="6"></div>
-      <div class="col"><label>&nbsp;</label><button id="scan" class="secondary">Scan QR</button></div>
-    </div>
-    <button id="verify">Verify (online)</button>
-    <p class="small">Offline? Skip verification → submit as <b>UNVERIFIED</b> (clinician approves later).</p>
-  </div>
-
-  <div class="card" id="formBox" style="display:none">
-    <h2>Vitals</h2>
-    <div class="grid2">
-      <div><label>SBP #1</label><input id="sbp1" inputmode="numeric"></div>
-      <div><label>DBP #1</label><input id="dbp1" inputmode="numeric"></div>
-      <div><label>SBP #2</label><input id="sbp2" inputmode="numeric"></div>
-      <div><label>DBP #2</label><input id="dbp2" inputmode="numeric"></div>
-      <div><label>HR</label><input id="hr" inputmode="numeric"></div>
-      <div><label>SpO2</label><input id="spo2" inputmode="numeric"></div>
-      <div><label>Temp (°C)</label><input id="temp" inputmode="decimal"></div>
-      <div><label>Weight (kg)</label><input id="weight" inputmode="decimal"></div>
-      <div><label>Height (m)</label><input id="height" inputmode="decimal"></div>
-      <div><label>Waist (cm)</label><input id="waist" inputmode="decimal"></div>
-    </div>
-    <hr/>
-    <h2>Tests</h2>
-    <div class="row">
-      <div class="col"><label>Glucose Type</label>
-        <select id="gtype"><option value="">—</option><option>FASTING</option><option>RANDOM</option></select>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>Screener</h1>
+        <div class="subtitle">Clinical screening capture</div>
       </div>
-      <div class="col"><label>Glucose Value</label><input id="gval" inputmode="numeric"></div>
+    </div>
+    <div class="row" style="gap:8px">
+      <a class="btn ghost" href="/login.html">Back</a>
+      <a class="btn ghost" href="/offline.html">Diagnostics</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Start encounter</h2>
+        <span class="badge" data-sync>⏳</span>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label>Person ID</label>
+          <input id="personId" inputmode="numeric" placeholder="e.g. 1">
+        </div>
+        <div class="col">
+          <label>Camp ID (optional)</label>
+          <input id="campId" inputmode="numeric" placeholder="e.g. 3">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="start" class="btn secondary">Start Encounter</button>
+      </div>
+      <p class="small">If offline, this will be queued and synced later.</p>
     </div>
 
-    <button id="submit">Submit Encounter</button>
-    <p class="small" id="statusLine"></p>
+    <div class="card soft" id="verifyBox" style="display:none">
+      <div class="card-header">
+        <h2 class="card-title">Presence verification</h2>
+      </div>
+      <label>6-digit TOTP</label>
+      <input id="code" class="code" inputmode="numeric" maxlength="6" placeholder="123456">
+      <div class="actions">
+        <button id="verify" class="btn">Verify (online)</button>
+      </div>
+      <p class="small">Ask the patient for their 6-digit code. Offline? submit as UNVERIFIED.</p>
+    </div>
+
+    <div class="card" id="formBox" style="display:none">
+      <div class="card-header">
+        <h2 class="card-title">Vitals</h2>
+      </div>
+      <div class="grid grid-2">
+        <div><label>SBP #1</label><input id="sbp1" inputmode="numeric"></div>
+        <div><label>DBP #1</label><input id="dbp1" inputmode="numeric"></div>
+        <div><label>SBP #2</label><input id="sbp2" inputmode="numeric"></div>
+        <div><label>DBP #2</label><input id="dbp2" inputmode="numeric"></div>
+        <div><label>HR</label><input id="hr" inputmode="numeric"></div>
+        <div><label>SpO2</label><input id="spo2" inputmode="numeric"></div>
+        <div><label>Temp (°C)</label><input id="temp" inputmode="decimal"></div>
+        <div><label>Weight (kg)</label><input id="weight" inputmode="decimal"></div>
+        <div><label>Height (m)</label><input id="height" inputmode="decimal"></div>
+        <div><label>Waist (cm)</label><input id="waist" inputmode="decimal"></div>
+      </div>
+      <div class="hr"></div>
+      <div class="card-header">
+        <h2 class="card-title">Tests</h2>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label>Glucose Type</label>
+          <select id="gtype"><option value="">—</option><option>FASTING</option><option>RANDOM</option></select>
+        </div>
+        <div class="col">
+          <label>Glucose Value</label>
+          <input id="gval" inputmode="numeric">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="submit" class="btn">Submit Encounter</button>
+      </div>
+      <p class="small" id="statusLine"></p>
+    </div>
   </div>
-</main>
+</div>
 
 <script type="module">
   import "./js/app.js";
@@ -76,25 +104,40 @@
   import { toast, setSyncBadge } from "./js/ui.js";
   import { computeDerived } from "./js/triage.js";
   import { loadRules } from "./js/rules.js";
-  import { startCamera } from "./js/camera.js";
-  import { scanQrFromVideo } from "./js/qr.js";
 
   setSyncBadge(navigator.onLine ? "✅ Online" : "⚠️ Offline", navigator.onLine ? "ok":"bad");
 
   let encounterId = null;
   let verificationToken = null;
-  let stopCam = null;
-  let stopScan = null;
+
+  function num(id){ const v=document.querySelector(id).value.trim(); return v===""?null:+v; }
+  function dec(id){ const v=document.querySelector(id).value.trim(); return v===""?null:+v; }
 
   async function startEncounter() {
-    const person_id = +document.querySelector("#personId").value;
-    const camp_id = document.querySelector("#campId").value ? +document.querySelector("#campId").value : null;
+    const personRaw = document.querySelector("#personId").value.trim();
+    const campRaw = document.querySelector("#campId").value.trim();
+    const person_id = personRaw ? Number(personRaw) : null;
+    const camp_id = campRaw ? Number(campRaw) : null;
+    if (!person_id || Number.isNaN(person_id)) {
+      toast("Enter a valid Person ID before starting.");
+      return;
+    }
+    if (camp_id !== null && Number.isNaN(camp_id)) {
+      toast("Camp ID must be a number.");
+      return;
+    }
+
     const payload = { person_id, camp_id, client_created_at: new Date().toISOString() };
 
     if (navigator.onLine) {
       const res = await safeApi("/api/encounters/start", { method:"POST", body: payload });
-      if (res.ok) { encounterId = res.data.encounter_id; toast("Encounter started"); }
-      else { await enqueue("encounter:start", payload); toast("Saved offline: start encounter"); encounterId = "OFFLINE_LOCAL"; }
+      if (res.ok) {
+        encounterId = res.data.encounter_id;
+        toast("Encounter started");
+      } else {
+        toast("Start failed: " + res.error);
+        return;
+      }
     } else {
       await enqueue("encounter:start", payload);
       encounterId = "OFFLINE_LOCAL";
@@ -103,23 +146,6 @@
 
     document.querySelector("#verifyBox").style.display = "";
     document.querySelector("#formBox").style.display = "";
-  }
-
-  async function scanQR() {
-    const video = document.querySelector("#video");
-    stopCam = await startCamera(video);
-    try {
-      stopScan = await scanQrFromVideo(video, (raw) => {
-        // spec: QR encodes ONLY 6 digits
-        const digits = raw.replace(/\D/g,"").slice(0,6);
-        document.querySelector("#code").value = digits;
-        toast("QR captured");
-        stopScan?.(); stopCam?.();
-      });
-    } catch (e) {
-      toast(e.message);
-      stopCam?.();
-    }
   }
 
   async function verifyOnline() {
@@ -138,9 +164,6 @@
     }
   }
 
-  function num(id){ const v=document.querySelector(id).value.trim(); return v===""?null:+v; }
-  function dec(id){ const v=document.querySelector(id).value.trim(); return v===""?null:+v; }
-
   async function submitEncounter() {
     const rules = await loadRules();
     const vitals = {
@@ -150,9 +173,7 @@
       consent:true
     };
     const tests = { glucose_type: document.querySelector("#gtype").value || null, glucose_value: num("#gval") };
-
     const derived = await computeDerived({ ...vitals, ...tests, overdue_days:0, missed_followups:0 });
-
     const body = { vitals, tests, rules_version: rules.meta.version, derived, verification_token: verificationToken, client_submitted_at: new Date().toISOString() };
 
     if (navigator.onLine && encounterId !== "OFFLINE_LOCAL") {
@@ -160,7 +181,6 @@
       if (res.ok) {
         toast(`Submitted: ${res.data.status} • ${res.data.rag}`);
       } else {
-        // if submission fails, queue it
         await enqueue("encounter:submit", { encounter_id: encounterId, body });
         toast("Saved offline: submit encounter");
       }
@@ -171,7 +191,6 @@
   }
 
   document.querySelector("#start").onclick = () => startEncounter().catch(e=>toast(e.message));
-  document.querySelector("#scan").onclick = () => scanQR().catch(e=>toast(e.message));
   document.querySelector("#verify").onclick = () => verifyOnline().catch(e=>toast(e.message));
   document.querySelector("#submit").onclick = () => submitEncounter().catch(e=>toast(e.message));
 </script>

@@ -1,42 +1,55 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Offline Diagnostics | Rural Health</title>
+  <title>Offline Diagnostics | RuralReach</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/assets/styles.css">
-  <meta name="theme-color" content="#0b1320">
+  <meta name="theme-color" content="#ffffff">
 </head>
-<body class="page page-offline">
-<header>
-  <div class="header-main">
-    <div>
-      <div class="page-title"><span class="dot"></span><h1>Offline Diagnostics</h1></div>
-      <div class="subtitle">Use this if you hit white screens / cache issues</div>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>Offline Diagnostics</h1>
+        <div class="subtitle">Use this to clear cache and storage</div>
+      </div>
     </div>
-    <div class="header-actions">
+    <div class="row" style="gap:8px">
       <a class="btn ghost" href="/login.html">Back</a>
     </div>
   </div>
-</header>
+</div>
 
-<main class="stack">
-  <div class="card">
-    <div><span class="pill" id="netPill">⏳</span> <span class="pill" id="swPill">⏳</span></div>
-    <div class="mt-10">
-      <button id="clearBtn">Clear site data + unregister Service Worker</button>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Connection</h2>
+      </div>
+      <div class="row">
+        <span class="badge" id="netPill">⏳</span>
+        <span class="badge" id="swPill">⏳</span>
+      </div>
+      <div class="actions">
+        <button id="clearBtn" class="btn">Clear site data + unregister Service Worker</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Current storage</h2>
+      </div>
+      <pre id="out"></pre>
     </div>
   </div>
-
-  <div class="card">
-    <h2>Current storage</h2>
-    <pre id="out"></pre>
-  </div>
-</main>
+</div>
 
 <script>
-  function setNet(){ document.getElementById("netPill").textContent = navigator.onLine ? "✅ Online" : "⚠️ Offline"; }
+  function setNet(){ document.getElementById("netPill").textContent = navigator.onLine ? "Online" : "Offline"; }
   addEventListener("online",setNet); addEventListener("offline",setNet); setNet();
 
   async function swStatus(){
@@ -57,17 +70,11 @@
         const keys = await caches.keys();
         for (const k of keys) await caches.delete(k);
       }
-      // Clear localStorage + sessionStorage
       localStorage.clear(); sessionStorage.clear();
-
-      // Attempt to delete IndexedDB databases (best-effort)
       if (indexedDB.databases) {
         const dbs = await indexedDB.databases();
-        for (const db of dbs) {
-          if (db.name) indexedDB.deleteDatabase(db.name);
-        }
+        for (const db of dbs) { if (db.name) indexedDB.deleteDatabase(db.name); }
       }
-
       alert("Cleared. Now hard refresh (Ctrl+Shift+R) and login again.");
       await swStatus();
       dump();
@@ -81,7 +88,7 @@
     const info = {
       online: navigator.onLine,
       origin: location.origin,
-      token_present: !!localStorage.getItem("token"),
+      token_present: !!localStorage.getItem("rh_token"),
       api_base: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000",
       sw_supported: "serviceWorker" in navigator,
       caches_supported: "caches" in window,

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, date
 from ..db import get_db
 from ..models import Camp
@@ -13,7 +14,11 @@ router = APIRouter(prefix="/api", tags=["camps"])
 def create_camp(body: CampIn, db: Session = Depends(get_db)):
     c = Camp(**body.model_dump())
     db.add(c)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(400, "Invalid village_id or camp data")
     db.refresh(c)
     return CampOut(**body.model_dump(), id=c.id, updated_at=c.updated_at)
 

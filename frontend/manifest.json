@@ -1,6 +1,6 @@
 {
-  "name": "Rural Health Tracker",
-  "short_name": "HealthTrack",
+  "name": "RuralReach Tracker",
+  "short_name": "RuralReach",
   "start_url": "/login.html",
   "display": "standalone",
   "background_color": "#0b1220",

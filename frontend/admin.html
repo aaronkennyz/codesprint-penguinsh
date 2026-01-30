@@ -3,120 +3,141 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin | Rural Health</title>
+  <title>Admin | RuralReach</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/assets/styles.css">
-  <meta name="theme-color" content="#0b1320">
+  <meta name="theme-color" content="#ffffff">
 </head>
-<body class="page page-admin">
-<header>
-  <div class="header-main">
-    <div>
-      <div class="page-title"><span class="dot"></span><h1>Program Admin</h1></div>
-      <div class="subtitle" id="meLine">Checking session...</div>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>Program Admin</h1>
+        <div class="subtitle" id="meLine">Checking session...</div>
+      </div>
     </div>
-    <div class="header-actions">
-      <span class="pill" id="netPill">...</span>
+    <div class="row" style="gap:8px">
+      <span class="badge" id="netPill">...</span>
       <a class="btn ghost" href="/login.html">Back</a>
-      <button class="secondary btn-inline" id="logoutBtn">Logout</button>
+      <button class="btn secondary" id="logoutBtn">Logout</button>
     </div>
   </div>
-</header>
+</div>
 
-<main class="stack">
-  <div class="card">
-    <h2>Create camp / clinic session</h2>
-    <div class="row">
-      <input id="campVillageId" placeholder="village_id (number)" />
-      <input id="campName" placeholder="name" />
-    </div>
-    <div class="row">
-      <input id="campDate" placeholder="date YYYY-MM-DD" />
-      <input id="campStart" placeholder="start_time HH:MM" />
-    </div>
-    <div class="row">
-      <input id="campEnd" placeholder="end_time HH:MM" />
-      <input id="campContactName" placeholder="contact_name" />
-    </div>
-    <div class="row">
-      <input id="campContactPhone" placeholder="contact_phone" />
-      <input id="campLandmark" placeholder="landmark" />
-    </div>
-    <textarea id="campAddress" placeholder="address"></textarea>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Create camp / clinic session</h2>
+      </div>
+      <div class="row">
+        <input id="campVillageId" placeholder="village_id (number)" />
+        <input id="campName" placeholder="name" />
+      </div>
+      <div class="row">
+        <input id="campDate" placeholder="date YYYY-MM-DD" />
+        <input id="campStart" placeholder="start_time HH:MM" />
+      </div>
+      <div class="row">
+        <input id="campEnd" placeholder="end_time HH:MM" />
+        <input id="campContactName" placeholder="contact_name" />
+      </div>
+      <div class="row">
+        <input id="campContactPhone" placeholder="contact_phone" />
+        <input id="campLandmark" placeholder="landmark" />
+      </div>
+      <textarea id="campAddress" placeholder="address"></textarea>
 
-    <div class="row">
-      <input id="campLat" placeholder="lat (required)" />
-      <input id="campLng" placeholder="lng (required)" />
+      <div class="row">
+        <input id="campLat" placeholder="lat (required)" />
+        <input id="campLng" placeholder="lng (required)" />
+      </div>
+
+      <div class="actions">
+        <button class="btn secondary" id="getGeoBtn">Capture coordinates</button>
+      </div>
+
+      <textarea id="servicesJson" placeholder='services_json checklist (JSON) e.g. ["bp","glucose","hb"]'></textarea>
+
+      <div class="actions">
+        <button id="createCampBtn" class="btn">Save camp</button>
+      </div>
+      <div class="small" id="campMsg"></div>
     </div>
 
-    <button class="secondary" id="getGeoBtn">Capture coordinates</button>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Create staff account</h2>
+      </div>
+      <div class="row">
+        <input id="staffUsername" placeholder="username" />
+        <input id="staffPassword" placeholder="password" type="password" />
+      </div>
+      <div class="row">
+        <select id="staffRole">
+          <option value="ENUMERATOR">ENUMERATOR</option>
+          <option value="SCREENER">SCREENER</option>
+          <option value="CLINICIAN">CLINICIAN</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+        <input id="staffDisplayName" placeholder="display_name" />
+      </div>
+      <div class="row">
+        <input id="staffPhone" placeholder="phone (optional)" />
+        <input id="staffVillages" placeholder="assigned_villages (comma list e.g. 1,2)" />
+      </div>
+      <div class="actions">
+        <button id="createStaffBtn" class="btn">Create staff</button>
+      </div>
+      <div class="small" id="staffMsg"></div>
+    </div>
 
-    <textarea id="servicesJson" placeholder='services_json checklist (JSON) e.g. ["bp","glucose","hb"]'></textarea>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Create patient account</h2>
+      </div>
+      <div class="row">
+        <input id="patientHouseholdId" placeholder="household_id (number)" />
+        <input id="patientVillageId" placeholder="village_id (number)" />
+      </div>
+      <div class="row">
+        <input id="patientName" placeholder="full_name" />
+        <input id="patientPhone" placeholder="phone (optional)" />
+      </div>
+      <div class="row">
+        <input id="patientDob" placeholder="dob YYYY-MM-DD (optional)" />
+        <select id="patientSex">
+          <option value="">sex (optional)</option>
+          <option value="M">M</option>
+          <option value="F">F</option>
+          <option value="O">O</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button id="createPatientBtn" class="btn">Create patient</button>
+      </div>
+      <div class="small">Patient login: username = person_id, password = phone last4</div>
+      <div class="small" id="patientMsg"></div>
+    </div>
 
-    <button id="createCampBtn">Save camp</button>
-    <div class="muted mt-8" id="campMsg"></div>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Dashboard quick checks</h2>
+      </div>
+      <div class="row">
+        <button class="btn secondary" id="covBtn">Coverage</button>
+        <button class="btn secondary" id="verBtn">Verification rates</button>
+      </div>
+      <div class="row">
+        <button class="btn secondary" id="overBtn">Overdue</button>
+        <button class="btn secondary" id="expBtn">Export CSV</button>
+      </div>
+      <div class="list" id="dashOut"></div>
+    </div>
   </div>
-
-  <div class="card">
-    <h2>Create staff account</h2>
-    <div class="row">
-      <input id="staffUsername" placeholder="username" />
-      <input id="staffPassword" placeholder="password" type="password" />
-    </div>
-    <div class="row">
-      <select id="staffRole">
-        <option value="ENUMERATOR">ENUMERATOR</option>
-        <option value="SCREENER">SCREENER</option>
-        <option value="CLINICIAN">CLINICIAN</option>
-        <option value="ADMIN">ADMIN</option>
-      </select>
-      <input id="staffDisplayName" placeholder="display_name" />
-    </div>
-    <div class="row">
-      <input id="staffPhone" placeholder="phone (optional)" />
-      <input id="staffVillages" placeholder="assigned_villages (comma list e.g. 1,2)" />
-    </div>
-    <button id="createStaffBtn">Create staff</button>
-    <div class="muted mt-8" id="staffMsg"></div>
-  </div>
-
-  <div class="card">
-    <h2>Create patient account</h2>
-    <div class="row">
-      <input id="patientHouseholdId" placeholder="household_id (number)" />
-      <input id="patientVillageId" placeholder="village_id (number)" />
-    </div>
-    <div class="row">
-      <input id="patientName" placeholder="full_name" />
-      <input id="patientPhone" placeholder="phone (optional)" />
-    </div>
-    <div class="row">
-      <input id="patientDob" placeholder="dob YYYY-MM-DD (optional)" />
-      <select id="patientSex">
-        <option value="">sex (optional)</option>
-        <option value="M">M</option>
-        <option value="F">F</option>
-        <option value="O">O</option>
-      </select>
-    </div>
-    <button id="createPatientBtn">Create patient</button>
-    <div class="muted">Patient login: username = person_id, password = phone last4</div>
-    <div class="muted mt-8" id="patientMsg"></div>
-  </div>
-
-  <div class="card">
-    <h2>Dashboard quick checks</h2>
-    <div class="row">
-      <button class="secondary" id="covBtn">Coverage</button>
-      <button class="secondary" id="verBtn">Verification rates</button>
-    </div>
-    <div class="row">
-      <button class="secondary" id="overBtn">Overdue</button>
-      <button class="secondary" id="expBtn">Export CSV</button>
-    </div>
-    <div class="list mt-10" id="dashOut"></div>
-  </div>
-</main>
+</div>
 
 <script type="module">
   import "./js/app.js";
@@ -143,7 +164,6 @@
   }
   document.getElementById("logoutBtn").onclick=()=>{ clearToken(); location.href="/login.html"; };
 
-  // Capture GPS (web)
   document.getElementById("getGeoBtn").onclick = () => {
     if (!navigator.geolocation) { alert("Geolocation not supported"); return; }
     navigator.geolocation.getCurrentPosition(
@@ -156,7 +176,6 @@
     );
   };
 
-  // Create camp
   document.getElementById("createCampBtn").onclick = async () => {
     const msg = document.getElementById("campMsg");
     msg.textContent = "Saving...";
@@ -186,7 +205,6 @@
     }
   };
 
-  // Create staff
   document.getElementById("createStaffBtn").onclick = async () => {
     const msg = document.getElementById("staffMsg");
     msg.textContent = "Saving...";
@@ -210,7 +228,6 @@
     }
   };
 
-  // Create patient
   document.getElementById("createPatientBtn").onclick = async () => {
     const msg = document.getElementById("patientMsg");
     msg.textContent = "Saving...";
@@ -236,7 +253,7 @@
     const out = document.getElementById("dashOut");
     const div=document.createElement("div");
     div.className="item";
-    div.innerHTML = `<pre style="margin:0;white-space:pre-wrap;word-break:break-word">${JSON.stringify(obj,null,2)}</pre>`;
+    div.innerHTML = `<pre>${JSON.stringify(obj,null,2)}</pre>`;
     out.prepend(div);
   }
 

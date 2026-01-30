@@ -57,7 +57,7 @@ class CampIn(BaseModel):
     lng: float
     contact_name: Optional[str] = None
     contact_phone: Optional[str] = None
-    services_json: Optional[Dict[str, Any]] = None
+    services_json: Optional[Dict[str, Any] | List[str]] = None
 
 class CampOut(CampIn):
     id: int

@@ -3,84 +3,101 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Enumerator | Rural Health</title>
+  <title>Enumerator | RuralReach</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/assets/styles.css">
-  <meta name="theme-color" content="#0b1320">
+  <meta name="theme-color" content="#ffffff">
 </head>
-<body class="page page-enum">
-<header>
-  <div class="header-main">
-    <div>
-      <div class="page-title"><span class="dot"></span><h1>Enumerator</h1></div>
-      <div class="subtitle" id="meLine">Checking session...</div>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>Enumerator</h1>
+        <div class="subtitle" id="meLine">Checking session...</div>
+      </div>
     </div>
-    <div class="header-actions">
-      <span class="pill" id="netPill">...</span>
+    <div class="row" style="gap:8px">
+      <span class="badge" id="netPill">...</span>
       <a class="btn ghost" href="/login.html">Back</a>
-      <button class="secondary btn-inline" id="logoutBtn">Logout</button>
+      <button class="btn secondary" id="logoutBtn">Logout</button>
     </div>
   </div>
-</header>
+</div>
 
-<main class="stack">
-  <div class="card">
-    <h2>Search people</h2>
-    <div class="row">
-      <input id="q" placeholder="Search name / phone / id" />
-      <button id="searchBtn">Search</button>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Search people</h2>
+      </div>
+      <div class="row">
+        <input id="q" placeholder="Search name / phone / id" />
+        <button id="searchBtn" class="btn secondary">Search</button>
+      </div>
+      <p class="small">Tip: works on low bandwidth. If offline, it will show last cached results (if implemented).</p>
+      <div class="list" id="peopleList"></div>
     </div>
-    <div class="muted mt-8">Tip: works even on low bandwidth. If offline, it will show last cached results (if you implement caching later).</div>
-    <div class="list mt-10" id="peopleList"></div>
-  </div>
 
-  <div class="card">
-    <h2>Create household</h2>
-    <div class="row">
-      <input id="hhVillageId" placeholder="village_id (number)" />
-      <input id="hhHead" placeholder="head_name" />
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Create household</h2>
+      </div>
+      <div class="row">
+        <input id="hhVillageId" placeholder="village_id (number)" />
+        <input id="hhHead" placeholder="head_name" />
+      </div>
+      <div class="row">
+        <input id="hhHamlet" placeholder="hamlet (optional)" />
+        <input id="hhPhone" placeholder="phone (optional)" />
+      </div>
+      <div class="actions">
+        <button id="createHouseholdBtn" class="btn">Save household</button>
+      </div>
+      <div class="small" id="hhMsg"></div>
     </div>
-    <div class="row">
-      <input id="hhHamlet" placeholder="hamlet (optional)" />
-      <input id="hhPhone" placeholder="phone (optional)" />
-    </div>
-    <button id="createHouseholdBtn">Save household</button>
-    <div class="muted mt-8" id="hhMsg"></div>
-  </div>
 
-  <div class="card">
-    <h2>Create person</h2>
-    <div class="row">
-      <input id="personHouseholdId" placeholder="household_id (number)" />
-      <input id="personName" placeholder="full_name" />
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Create person</h2>
+      </div>
+      <div class="row">
+        <input id="personHouseholdId" placeholder="household_id (number)" />
+        <input id="personName" placeholder="full_name" />
+      </div>
+      <div class="row">
+        <input id="personDob" placeholder="dob YYYY-MM-DD (optional)" />
+        <select id="personSex">
+          <option value="">sex (optional)</option>
+          <option value="M">M</option>
+          <option value="F">F</option>
+          <option value="O">O</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="personPhone" placeholder="phone" />
+        <input id="personVillageId" placeholder="village_id (number)" />
+      </div>
+      <textarea id="personRiskJson" placeholder='risk_survey_json (optional JSON) e.g. {"tobacco":true}'></textarea>
+      <div class="actions">
+        <button id="createPersonBtn" class="btn">Save person</button>
+      </div>
+      <div class="small" id="pMsg"></div>
     </div>
-    <div class="row">
-      <input id="personDob" placeholder="dob YYYY-MM-DD (optional)" />
-      <select id="personSex">
-        <option value="">sex (optional)</option>
-        <option value="M">M</option>
-        <option value="F">F</option>
-        <option value="O">O</option>
-      </select>
-    </div>
-    <div class="row">
-      <input id="personPhone" placeholder="phone" />
-      <input id="personVillageId" placeholder="village_id (number)" />
-    </div>
-    <textarea id="personRiskJson" placeholder='risk_survey_json (optional JSON) e.g. {"tobacco":true}'></textarea>
-    <button id="createPersonBtn">Save person</button>
-    <div class="muted mt-8" id="pMsg"></div>
-  </div>
 
-  <div class="card">
-    <h2>Camps (assigned village)</h2>
-    <div class="row">
-      <input id="campVillageId" placeholder="village_id (number)" />
-      <button id="loadCampsBtn">Load camps</button>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Camps (assigned village)</h2>
+      </div>
+      <div class="row">
+        <input id="campVillageId" placeholder="village_id (number)" />
+        <button id="loadCampsBtn" class="btn secondary">Load camps</button>
+      </div>
+      <div class="list" id="campsList"></div>
     </div>
-    <div class="list mt-10" id="campsList"></div>
   </div>
-</main>
+</div>
 
 <script type="module">
   import "./js/app.js";
@@ -114,7 +131,6 @@
     location.href = "/login.html";
   };
 
-  // Search people
   document.getElementById("searchBtn").onclick = async () => {
     const q = document.getElementById("q").value.trim();
     const list = document.getElementById("peopleList");
@@ -122,7 +138,7 @@
     try {
       const rows = await api(`/api/people?search=${encodeURIComponent(q)}&updated_since=`);
       if (!rows?.length) {
-        list.innerHTML = `<div class="item muted">No results</div>`;
+        list.innerHTML = `<div class="item small">No results</div>`;
         return;
       }
       for (const p of rows) {
@@ -130,7 +146,7 @@
         div.className = "item";
         div.innerHTML = `
           <div class="item-title">${p.full_name ?? p.name ?? ("Person #" + p.id)}</div>
-          <div class="muted">id=${p.id} - phone=${p.phone ?? "-"} - village_id=${p.village_id ?? "-"}</div>
+          <div class="small">id=${p.id} - phone=${p.phone ?? "-"} - village_id=${p.village_id ?? "-"}</div>
         `;
         list.appendChild(div);
       }
@@ -139,7 +155,6 @@
     }
   };
 
-  // Create household
   document.getElementById("createHouseholdBtn").onclick = async () => {
     const msg = document.getElementById("hhMsg");
     msg.textContent = "Saving...";
@@ -157,7 +172,6 @@
     }
   };
 
-  // Create person
   document.getElementById("createPersonBtn").onclick = async () => {
     const msg = document.getElementById("pMsg");
     msg.textContent = "Saving...";
@@ -182,7 +196,6 @@
     }
   };
 
-  // Camps list
   document.getElementById("loadCampsBtn").onclick = async () => {
     const villageId = document.getElementById("campVillageId").value.trim();
     const list = document.getElementById("campsList");
@@ -190,7 +203,7 @@
     try {
       const rows = await api(`/api/camps?village_id=${encodeURIComponent(villageId)}&from_date=&updated_since=`);
       if (!rows?.length) {
-        list.innerHTML = `<div class="item muted">No camps</div>`;
+        list.innerHTML = `<div class="item small">No camps</div>`;
         return;
       }
       for (const c of rows) {
@@ -199,11 +212,11 @@
         div.className = "item";
         div.innerHTML = `
           <div class="item-title">${c.name}</div>
-          <div class="muted">${c.date} - ${c.start_time}-${c.end_time}</div>
-          <div class="muted">${c.address ?? ""} ${c.landmark ? "- " + c.landmark : ""}</div>
+          <div class="small">${c.date} - ${c.start_time}-${c.end_time}</div>
+          <div class="small">${c.address ?? ""} ${c.landmark ? "- " + c.landmark : ""}</div>
           <div class="actions">
-            <a class="pill" href="${maps}" target="_blank" rel="noreferrer">Open in Maps</a>
-            <span class="pill">Phone: ${c.contact_phone ?? "-"}</span>
+            <a class="btn ghost" href="${maps}" target="_blank" rel="noreferrer">Open in Maps</a>
+            <span class="badge">Phone: ${c.contact_phone ?? "-"}</span>
           </div>
         `;
         list.appendChild(div);

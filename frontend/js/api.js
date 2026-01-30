@@ -11,7 +11,11 @@ export async function api(path, { method="GET", body=null, headers={} } = {}) {
   if (res.status === 401) { clearToken(); throw new Error("Unauthorized"); }
   if (!res.ok) {
     let msg = `${res.status}`;
-    try { const j = await res.json(); msg = j.detail || msg; } catch {}
+    try {
+      const j = await res.json();
+      msg = j.detail || msg;
+      if (typeof msg === "object") msg = JSON.stringify(msg);
+    } catch {}
     throw new Error(msg);
   }
   return res.json();

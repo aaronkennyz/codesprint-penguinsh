@@ -1,5 +1,5 @@
-<!doctype html>
-<html>
+﻿<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -7,23 +7,53 @@
   <link rel="stylesheet" href="/assets/styles.css"/>
   <title>Login</title>
 </head>
-<body class="page page-login">
-<header>
-  <div class="page-title"><span class="dot"></span><h1>Rural Health</h1></div>
-  <div class="subtitle">Secure access • Offline-ready</div>
-</header>
-<main class="stack">
-  <div class="card">
-    <div class="badge" data-sync>⏳ Offline-ready</div>
-    <label>Username</label><input id="u" autocomplete="username">
-    <label>Password</label><input id="p" type="password" autocomplete="current-password">
-    <div class="spacer"></div>
-    <button id="btn">Sign in</button>
-    <p class="small">Demo: enum1/enum1 • screen1/screen1 • clin1/clin1 • admin1/admin1<br>
-      Patient demo: username=person_id, password=phone_last4
-    </p>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>RuralReach</h1>
+        <div class="subtitle">Medical field operations, in rurals.
+
+
+
+            
+        </div>
+      </div>
+    </div>
+    <span class="badge" data-sync>⏳ Offline-ready</span>
   </div>
-</main>
+</div>
+
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card soft">
+      <div class="card-header">
+        <h2 class="card-title">Program Overview</h2>
+      </div>
+      <p class="small">This application supports rural screening camps with offline-first data capture, identity verification, and clinician review.</p>
+      <div class="notice" style="margin-top:10px">
+        Tip: Use the Demo accounts to explore workflows quickly.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Sign in</h2>
+      </div>
+      <label>Username</label><input id="u" autocomplete="username" placeholder="e.g. screen1">
+      <label>Password</label><input id="p" type="password" autocomplete="current-password" placeholder="••••••">
+      <div class="actions">
+        <button id="btn" class="btn block">Sign in</button>
+      </div>
+      <p class="small">Demo: enum1/enum1 • screen1/screen1 • clin1/clin1 • admin1/admin1<br>
+        Patient demo: username=person_id, password=phone_last4
+      </p>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import "./js/app.js";
   import { api } from "./js/api.js";
