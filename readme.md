@@ -2,7 +2,7 @@
 
 **Problem Statement ID:** CS02HA
 **Team Name:** penguin.sh
-**College Name:** St Aloysius Deemed to be university School Of Engineering 
+**College Name:** St Aloysius Deemed to be University School Of Engineering 
 
 ---
 
@@ -10,9 +10,9 @@
 
 Creating an affordable health tracking system to promote regular medical check-ups, especially in rural areas.
 
-- Who faces this problem : People living in rural and remote areas, especially elderly individuals, daily wage workers, and families with limited access to nearby healthcare facilities and medical professionals.
+- Who faces this problem: People living in rural and remote areas, especially elderly individuals, daily wage workers, and families with limited access to nearby healthcare facilities and medical professionals.
 
-- Why it matters :Lack of regular health monitoring and preventive check-ups leads to late detection of diseases, higher treatment costs, and increased health risks. Many preventable or manageable conditions become severe simply because medical attention is delayed. Improving healthcare accessibility can significantly enhance quality of life and reduce avoidable medical emergencies in rural communities.
+- Why it matters: Lack of regular health monitoring and preventive check-ups leads to late detection of diseases, higher treatment costs, and increased health risks. Many preventable or manageable conditions become severe simply because medical attention is delayed. Improving healthcare accessibility can significantly enhance quality of life and reduce avoidable medical emergencies in rural communities.
 
 - Current gaps or limitations in existing solutions
 
