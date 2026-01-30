@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="stylesheet" href="/assets/styles.css"/>
+  <title>Login</title>
+</head>
+<body class="page page-login">
+<header>
+  <div class="page-title"><span class="dot"></span><h1>Rural Health</h1></div>
+  <div class="subtitle">Secure access • Offline-ready</div>
+</header>
+<main class="stack">
+  <div class="card">
+    <div class="badge" data-sync>⏳ Offline-ready</div>
+    <label>Username</label><input id="u" autocomplete="username">
+    <label>Password</label><input id="p" type="password" autocomplete="current-password">
+    <div class="spacer"></div>
+    <button id="btn">Sign in</button>
+    <p class="small">Demo: enum1/enum1 • screen1/screen1 • clin1/clin1 • admin1/admin1<br>
+      Patient demo: username=person_id, password=phone_last4
+    </p>
+  </div>
+</main>
+<script type="module">
+  import "./js/app.js";
+  import { api } from "./js/api.js";
+  import { setAuth } from "./js/auth.js";
+  import { toast, setSyncBadge } from "./js/ui.js";
+
+  setSyncBadge(navigator.onLine ? "✅ Online" : "⚠️ Offline", navigator.onLine ? "ok":"bad");
+
+  document.querySelector("#btn").onclick = async () => {
+    const username = document.querySelector("#u").value.trim();
+    const password = document.querySelector("#p").value.trim();
+    try {
+      const res = await api("/api/login", { method:"POST", body:{ username, password } });
+      setAuth(res.access_token, { role: res.role, worker_id: res.worker_id, person_id: res.person_id });
+      toast("Logged in");
+      const role = res.role;
+      if (role === "ENUMERATOR") location.href="/enum.html";
+      else if (role === "SCREENER") location.href="/screener.html";
+      else if (role === "CLINICIAN") location.href="/clinician.html";
+      else if (role === "ADMIN") location.href="/admin.html";
+      else location.href="/patient.html";
+    } catch (e) {
+      toast("Login failed: " + e.message);
+    }
+  };
+</script>
+</body>
+</html>

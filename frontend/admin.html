@@ -1,0 +1,254 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin | Rural Health</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <meta name="theme-color" content="#0b1320">
+</head>
+<body class="page page-admin">
+<header>
+  <div class="page-title"><span class="dot"></span><h1>Program Admin</h1></div>
+  <div class="subtitle" id="meLine">Checking session...</div>
+  <div class="row actions">
+    <span class="pill" id="netPill">...</span>
+    <button class="secondary btn-inline" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<main class="stack">
+  <div class="card">
+    <h2>Create camp / clinic session</h2>
+    <div class="row">
+      <input id="campVillageId" placeholder="village_id (number)" />
+      <input id="campName" placeholder="name" />
+    </div>
+    <div class="row">
+      <input id="campDate" placeholder="date YYYY-MM-DD" />
+      <input id="campStart" placeholder="start_time HH:MM" />
+    </div>
+    <div class="row">
+      <input id="campEnd" placeholder="end_time HH:MM" />
+      <input id="campContactName" placeholder="contact_name" />
+    </div>
+    <div class="row">
+      <input id="campContactPhone" placeholder="contact_phone" />
+      <input id="campLandmark" placeholder="landmark" />
+    </div>
+    <textarea id="campAddress" placeholder="address"></textarea>
+
+    <div class="row">
+      <input id="campLat" placeholder="lat (required)" />
+      <input id="campLng" placeholder="lng (required)" />
+    </div>
+
+    <button class="secondary" id="getGeoBtn">Capture coordinates</button>
+
+    <textarea id="servicesJson" placeholder='services_json checklist (JSON) e.g. ["bp","glucose","hb"]'></textarea>
+
+    <button id="createCampBtn">Save camp</button>
+    <div class="muted mt-8" id="campMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Create staff account</h2>
+    <div class="row">
+      <input id="staffUsername" placeholder="username" />
+      <input id="staffPassword" placeholder="password" type="password" />
+    </div>
+    <div class="row">
+      <select id="staffRole">
+        <option value="ENUMERATOR">ENUMERATOR</option>
+        <option value="SCREENER">SCREENER</option>
+        <option value="CLINICIAN">CLINICIAN</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+      <input id="staffDisplayName" placeholder="display_name" />
+    </div>
+    <div class="row">
+      <input id="staffPhone" placeholder="phone (optional)" />
+      <input id="staffVillages" placeholder="assigned_villages (comma list e.g. 1,2)" />
+    </div>
+    <button id="createStaffBtn">Create staff</button>
+    <div class="muted mt-8" id="staffMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Create patient account</h2>
+    <div class="row">
+      <input id="patientHouseholdId" placeholder="household_id (number)" />
+      <input id="patientVillageId" placeholder="village_id (number)" />
+    </div>
+    <div class="row">
+      <input id="patientName" placeholder="full_name" />
+      <input id="patientPhone" placeholder="phone (optional)" />
+    </div>
+    <div class="row">
+      <input id="patientDob" placeholder="dob YYYY-MM-DD (optional)" />
+      <select id="patientSex">
+        <option value="">sex (optional)</option>
+        <option value="M">M</option>
+        <option value="F">F</option>
+        <option value="O">O</option>
+      </select>
+    </div>
+    <button id="createPatientBtn">Create patient</button>
+    <div class="muted">Patient login: username = person_id, password = phone last4</div>
+    <div class="muted mt-8" id="patientMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Dashboard quick checks</h2>
+    <div class="row">
+      <button class="secondary" id="covBtn">Coverage</button>
+      <button class="secondary" id="verBtn">Verification rates</button>
+    </div>
+    <div class="row">
+      <button class="secondary" id="overBtn">Overdue</button>
+      <button class="secondary" id="expBtn">Export CSV</button>
+    </div>
+    <div class="list mt-10" id="dashOut"></div>
+  </div>
+</main>
+
+<script type="module">
+  import "./js/app.js";
+  import { api } from "./js/api.js";
+  import { getToken, clearToken } from "./js/auth.js";
+
+  const API_BASE = "http://127.0.0.1:8000";
+
+  function setNetPill(){
+    document.getElementById("netPill").textContent = navigator.onLine ? "Online" : "Offline";
+  }
+  addEventListener("online", setNetPill);
+  addEventListener("offline", setNetPill);
+  setNetPill();
+
+  function requireAuth(){ if(!getToken()) location.href="/login.html"; }
+  async function loadMe(){
+    try{
+      const me = await api("/api/me");
+      const name = me.display_name || (me.worker_id ? `Worker ${me.worker_id}` : me.person_id ? `Person ${me.person_id}` : "User");
+      document.getElementById("meLine").textContent = `${me.role} - ${name}`;
+    }
+    catch{ document.getElementById("meLine").textContent="Session invalid - please login"; }
+  }
+  document.getElementById("logoutBtn").onclick=()=>{ clearToken(); location.href="/login.html"; };
+
+  // Capture GPS (web)
+  document.getElementById("getGeoBtn").onclick = () => {
+    if (!navigator.geolocation) { alert("Geolocation not supported"); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        document.getElementById("campLat").value = pos.coords.latitude.toFixed(6);
+        document.getElementById("campLng").value = pos.coords.longitude.toFixed(6);
+      },
+      (err) => alert("Geolocation error: " + err.message),
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  };
+
+  // Create camp
+  document.getElementById("createCampBtn").onclick = async () => {
+    const msg = document.getElementById("campMsg");
+    msg.textContent = "Saving...";
+    try{
+      let services = [];
+      const raw = document.getElementById("servicesJson").value.trim();
+      if (raw) services = JSON.parse(raw);
+
+      const payload = {
+        village_id: Number(document.getElementById("campVillageId").value),
+        name: document.getElementById("campName").value.trim(),
+        date: document.getElementById("campDate").value.trim(),
+        start_time: document.getElementById("campStart").value.trim(),
+        end_time: document.getElementById("campEnd").value.trim(),
+        address: document.getElementById("campAddress").value.trim(),
+        landmark: document.getElementById("campLandmark").value.trim() || null,
+        lat: Number(document.getElementById("campLat").value),
+        lng: Number(document.getElementById("campLng").value),
+        contact_name: document.getElementById("campContactName").value.trim(),
+        contact_phone: document.getElementById("campContactPhone").value.trim(),
+        services_json: services
+      };
+      const out = await api("/api/camps", { method:"POST", body: payload });
+      msg.textContent = `Saved camp id=${out.id ?? "OK"}`;
+    } catch(e) {
+      msg.textContent = `Error: ${e.message}`;
+    }
+  };
+
+  // Create staff
+  document.getElementById("createStaffBtn").onclick = async () => {
+    const msg = document.getElementById("staffMsg");
+    msg.textContent = "Saving...";
+    try {
+      const rawVillages = document.getElementById("staffVillages").value.trim();
+      const assigned_villages = rawVillages
+        ? rawVillages.split(",").map(v => Number(v.trim())).filter(v => !Number.isNaN(v))
+        : [];
+      const payload = {
+        username: document.getElementById("staffUsername").value.trim(),
+        password: document.getElementById("staffPassword").value.trim(),
+        role: document.getElementById("staffRole").value,
+        display_name: document.getElementById("staffDisplayName").value.trim() || null,
+        phone: document.getElementById("staffPhone").value.trim() || null,
+        assigned_villages
+      };
+      const out = await api("/api/admin/workers", { method: "POST", body: payload });
+      msg.textContent = `Created staff id=${out.id ?? "OK"}`;
+    } catch (e) {
+      msg.textContent = `Error: ${e.message}`;
+    }
+  };
+
+  // Create patient
+  document.getElementById("createPatientBtn").onclick = async () => {
+    const msg = document.getElementById("patientMsg");
+    msg.textContent = "Saving...";
+    try {
+      const payload = {
+        household_id: Number(document.getElementById("patientHouseholdId").value),
+        village_id: Number(document.getElementById("patientVillageId").value),
+        full_name: document.getElementById("patientName").value.trim(),
+        phone: document.getElementById("patientPhone").value.trim() || null,
+        dob: document.getElementById("patientDob").value.trim() || null,
+        sex: document.getElementById("patientSex").value || null,
+        demographics_json: null,
+        risk_survey_json: null
+      };
+      const out = await api("/api/admin/patients", { method: "POST", body: payload });
+      msg.textContent = `Created patient id=${out.id ?? "OK"} (login uses id + phone last4)`;
+    } catch (e) {
+      msg.textContent = `Error: ${e.message}`;
+    }
+  };
+
+  function show(obj){
+    const out = document.getElementById("dashOut");
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML = `<pre style="margin:0;white-space:pre-wrap;word-break:break-word">${JSON.stringify(obj,null,2)}</pre>`;
+    out.prepend(div);
+  }
+
+  document.getElementById("covBtn").onclick = async ()=>{ try{ show(await api("/api/dashboard/coverage")); }catch(e){ alert(e.message); } };
+  document.getElementById("overBtn").onclick = async ()=>{ try{ show(await api("/api/dashboard/overdue")); }catch(e){ alert(e.message); } };
+  document.getElementById("verBtn").onclick = async ()=>{ try{ show(await api("/api/dashboard/verification-rates")); }catch(e){ alert(e.message); } };
+  document.getElementById("expBtn").onclick = async ()=>{
+    try{
+      const token = getToken();
+      const res = await fetch(API_BASE + "/api/export/csv", { headers: { Authorization: "Bearer " + token } });
+      if(!res.ok) throw new Error(await res.text());
+      const csv = await res.text();
+      show({csv_preview: csv.slice(0, 2000)});
+    } catch(e){ alert(e.message); }
+  };
+
+  requireAuth(); loadMe();
+</script>
+</body>
+</html>

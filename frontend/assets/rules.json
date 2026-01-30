@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "period_seconds": 30,
+    "notes": "Demo triage rules. Clinically validate before real use."
+  },
+  "triage": {
+    "critical": [
+      {
+        "id": "spo2_critical_low",
+        "label": "Very low SpO2",
+        "rag": "RED",
+        "next_step": "Urgent referral: go to PHC/CHC today.",
+        "conditions": [{"field": "spo2", "op": "<=", "value": 90}]
+      },
+      {
+        "id": "bp_critical_high",
+        "label": "Very high blood pressure",
+        "rag": "RED",
+        "next_step": "Urgent referral: high BP needs same-day evaluation.",
+        "conditions": [
+          {"field": "sbp_avg", "op": ">=", "value": 180, "logic": "OR"},
+          {"field": "dbp_avg", "op": ">=", "value": 120}
+        ]
+      },
+      {
+        "id": "glucose_critical_high",
+        "label": "Very high glucose (random)",
+        "rag": "RED",
+        "next_step": "Urgent evaluation: very high sugar. Refer today.",
+        "conditions": [
+          {"field": "glucose_type", "op": "==", "value": "RANDOM", "logic": "AND"},
+          {"field": "glucose_value", "op": ">=", "value": 300}
+        ]
+      },
+      {
+        "id": "fever_plus_low_spo2",
+        "label": "Fever with low SpO2",
+        "rag": "RED",
+        "next_step": "Urgent evaluation: possible respiratory infection. Refer today.",
+        "conditions": [
+          {"field": "temp", "op": ">=", "value": 38.5, "logic": "AND"},
+          {"field": "spo2", "op": "<=", "value": 92}
+        ]
+      }
+    ],
+    "moderate": [
+      {
+        "id": "spo2_low",
+        "label": "Low SpO2",
+        "rag": "AMBER",
+        "next_step": "Follow up soon. Recheck SpO2 and assess symptoms.",
+        "conditions": [{"field": "spo2", "op": "<=", "value": 94}]
+      },
+      {
+        "id": "bp_stage2",
+        "label": "High blood pressure",
+        "rag": "AMBER",
+        "next_step": "Follow up in 1–2 weeks. Repeat BP and consult clinician.",
+        "conditions": [
+          {"field": "sbp_avg", "op": ">=", "value": 140, "logic": "OR"},
+          {"field": "dbp_avg", "op": ">=", "value": 90}
+        ]
+      },
+      {
+        "id": "bp_stage1",
+        "label": "Borderline BP",
+        "rag": "AMBER",
+        "next_step": "Follow up in 4 weeks. Lifestyle advice + repeat BP.",
+        "conditions": [
+          {"field": "sbp_avg", "op": ">=", "value": 130, "logic": "OR"},
+          {"field": "dbp_avg", "op": ">=", "value": 80}
+        ]
+      },
+      {
+        "id": "glucose_prediabetes_fasting",
+        "label": "Fasting glucose in prediabetes range",
+        "rag": "AMBER",
+        "next_step": "Follow up in 4–8 weeks. Counsel and recheck fasting glucose/HbA1c if possible.",
+        "conditions": [
+          {"field": "glucose_type", "op": "==", "value": "FASTING", "logic": "AND"},
+          {"field": "glucose_value", "op": ">=", "value": 100, "logic": "AND"},
+          {"field": "glucose_value", "op": "<=", "value": 125}
+        ]
+      },
+      {
+        "id": "glucose_diabetes_fasting",
+        "label": "Fasting glucose high",
+        "rag": "AMBER",
+        "next_step": "Follow up in 1–2 weeks. Confirm diagnosis and management plan.",
+        "conditions": [
+          {"field": "glucose_type", "op": "==", "value": "FASTING", "logic": "AND"},
+          {"field": "glucose_value", "op": ">=", "value": 126}
+        ]
+      },
+      {
+        "id": "bmi_obese",
+        "label": "High BMI",
+        "rag": "AMBER",
+        "next_step": "Counsel diet/activity. Follow up in 3 months.",
+        "conditions": [{"field": "bmi", "op": ">=", "value": 30}]
+      }
+    ],
+    "default": { "rag": "GREEN", "next_step": "Routine check-up as scheduled." }
+  },
+  "scoring": {
+    "overall_weights": { "cardiometabolic": 0.45, "respiratory": 0.20, "general_vitals": 0.15, "adherence": 0.20 },
+    "red_score_cap": 49,
+    "domains": {
+      "cardiometabolic": {
+        "components": [
+          {
+            "id": "bp_component",
+            "label": "Blood pressure",
+            "weight": 0.45,
+            "bands": [
+              {"min": null, "max": 119, "score": 100, "field": "sbp_avg"},
+              {"min": 120, "max": 129, "score": 80, "field": "sbp_avg"},
+              {"min": 130, "max": 139, "score": 60, "field": "sbp_avg"},
+              {"min": 140, "max": 179, "score": 35, "field": "sbp_avg"},
+              {"min": 180, "max": null, "score": 10, "field": "sbp_avg"}
+            ]
+          },
+          {
+            "id": "glucose_component",
+            "label": "Glucose",
+            "weight": 0.35,
+            "bands_by_type": {
+              "FASTING": [
+                {"min": null, "max": 99, "score": 100},
+                {"min": 100, "max": 125, "score": 70},
+                {"min": 126, "max": 199, "score": 35},
+                {"min": 200, "max": null, "score": 10}
+              ],
+              "RANDOM": [
+                {"min": null, "max": 139, "score": 100},
+                {"min": 140, "max": 199, "score": 70},
+                {"min": 200, "max": 299, "score": 35},
+                {"min": 300, "max": null, "score": 10}
+              ]
+            }
+          },
+          {
+            "id": "bmi_component",
+            "label": "BMI",
+            "weight": 0.20,
+            "bands": [
+              {"min": null, "max": 24.9, "score": 100, "field": "bmi"},
+              {"min": 25, "max": 29.9, "score": 70, "field": "bmi"},
+              {"min": 30, "max": null, "score": 35, "field": "bmi"}
+            ]
+          }
+        ]
+      },
+      "respiratory": {
+        "components": [
+          {
+            "id": "spo2_component",
+            "label": "SpO2",
+            "weight": 0.80,
+            "bands": [
+              {"min": 95, "max": null, "score": 100, "field": "spo2"},
+              {"min": 93, "max": 94, "score": 70, "field": "spo2"},
+              {"min": 91, "max": 92, "score": 35, "field": "spo2"},
+              {"min": null, "max": 90, "score": 10, "field": "spo2"}
+            ]
+          },
+          {
+            "id": "resp_symptoms_component",
+            "label": "Respiratory symptoms",
+            "weight": 0.20,
+            "symptom_scores": { "none": 100, "mild": 70, "moderate": 40, "severe": 15 },
+            "field": "resp_symptom_severity"
+          }
+        ]
+      },
+      "general_vitals": {
+        "components": [
+          {
+            "id": "hr_component",
+            "label": "Heart rate",
+            "weight": 0.50,
+            "bands": [
+              {"min": 60, "max": 100, "score": 100, "field": "hr"},
+              {"min": 50, "max": 59, "score": 70, "field": "hr"},
+              {"min": 101, "max": 120, "score": 40, "field": "hr"},
+              {"min": null, "max": 49, "score": 25, "field": "hr"},
+              {"min": 121, "max": null, "score": 20, "field": "hr"}
+            ]
+          },
+          {
+            "id": "temp_component",
+            "label": "Temperature",
+            "weight": 0.50,
+            "bands": [
+              {"min": 36.0, "max": 37.4, "score": 100, "field": "temp"},
+              {"min": 37.5, "max": 38.4, "score": 70, "field": "temp"},
+              {"min": 38.5, "max": null, "score": 35, "field": "temp"},
+              {"min": null, "max": 35.9, "score": 40, "field": "temp"}
+            ]
+          }
+        ]
+      },
+      "adherence": {
+        "components": [
+          {
+            "id": "overdue_days_component",
+            "label": "Overdue days",
+            "weight": 0.60,
+            "bands": [
+              {"min": null, "max": 0, "score": 100, "field": "overdue_days"},
+              {"min": 1, "max": 30, "score": 80, "field": "overdue_days"},
+              {"min": 31, "max": 90, "score": 55, "field": "overdue_days"},
+              {"min": 91, "max": 180, "score": 35, "field": "overdue_days"},
+              {"min": 181, "max": null, "score": 20, "field": "overdue_days"}
+            ]
+          },
+          {
+            "id": "missed_followups_component",
+            "label": "Missed follow-ups",
+            "weight": 0.40,
+            "bands": [
+              {"min": null, "max": 0, "score": 100, "field": "missed_followups"},
+              {"min": 1, "max": 1, "score": 70, "field": "missed_followups"},
+              {"min": 2, "max": 3, "score": 40, "field": "missed_followups"},
+              {"min": 4, "max": null, "score": 20, "field": "missed_followups"}
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "due_engine": {
+    "base_intervals_days": { "under_30": 365, "age_30_plus": 180 },
+    "rag_overrides_days": { "RED": 1, "AMBER": 28, "GREEN": null },
+    "flag_overrides_days": {
+      "bp_stage2": 14,
+      "bp_stage1": 30,
+      "glucose_diabetes_fasting": 14,
+      "glucose_prediabetes_fasting": 56,
+      "bmi_obese": 90,
+      "spo2_low": 7
+    },
+    "missed_followup_penalty_days": 14,
+    "max_interval_days": 365,
+    "min_interval_days": 1
+  },
+  "validation": {
+    "ranges": {
+      "sbp": { "min": 60, "max": 260 },
+      "dbp": { "min": 30, "max": 160 },
+      "hr": { "min": 25, "max": 220 },
+      "spo2": { "min": 50, "max": 100 },
+      "temp": { "min": 34.0, "max": 42.0 },
+      "weight": { "min": 10, "max": 250 },
+      "height": { "min": 0.8, "max": 2.3 },
+      "glucose_value": { "min": 20, "max": 600 }
+    },
+    "bp_requires_two_readings": true
+  }
+}

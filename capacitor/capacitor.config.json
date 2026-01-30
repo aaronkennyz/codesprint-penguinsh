@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.ruralhealth",
+  "appName": "RuralHealth",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

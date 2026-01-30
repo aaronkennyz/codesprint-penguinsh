@@ -1,0 +1,17 @@
+{
+  "name": "rh-capacitor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo \"No build step: copy frontend/ to dist/\" && node ./copy-web.js",
+    "cap:add:android": "npx cap add android",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/geolocation": "^6.0.0"
+  }
+}

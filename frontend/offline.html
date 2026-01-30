@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offline Diagnostics | Rural Health</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <meta name="theme-color" content="#0b1320">
+</head>
+<body class="page page-offline">
+<header>
+  <div class="page-title"><span class="dot"></span><h1>Offline Diagnostics</h1></div>
+  <div class="subtitle">Use this if you hit white screens / cache issues</div>
+</header>
+
+<main class="stack">
+  <div class="card">
+    <div><span class="pill" id="netPill">⏳</span> <span class="pill" id="swPill">⏳</span></div>
+    <div class="mt-10">
+      <button id="clearBtn">Clear site data + unregister Service Worker</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Current storage</h2>
+    <pre id="out"></pre>
+  </div>
+</main>
+
+<script>
+  function setNet(){ document.getElementById("netPill").textContent = navigator.onLine ? "✅ Online" : "⚠️ Offline"; }
+  addEventListener("online",setNet); addEventListener("offline",setNet); setNet();
+
+  async function swStatus(){
+    const el = document.getElementById("swPill");
+    if (!("serviceWorker" in navigator)) { el.textContent="SW: not supported"; return; }
+    const regs = await navigator.serviceWorker.getRegistrations();
+    el.textContent = regs.length ? `SW: ${regs.length} registered` : "SW: none";
+  }
+  swStatus();
+
+  document.getElementById("clearBtn").onclick = async () => {
+    try{
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+      }
+      if ("caches" in window) {
+        const keys = await caches.keys();
+        for (const k of keys) await caches.delete(k);
+      }
+      // Clear localStorage + sessionStorage
+      localStorage.clear(); sessionStorage.clear();
+
+      // Attempt to delete IndexedDB databases (best-effort)
+      if (indexedDB.databases) {
+        const dbs = await indexedDB.databases();
+        for (const db of dbs) {
+          if (db.name) indexedDB.deleteDatabase(db.name);
+        }
+      }
+
+      alert("Cleared. Now hard refresh (Ctrl+Shift+R) and login again.");
+      await swStatus();
+      dump();
+    } catch(e){
+      alert("Clear failed: " + e.message);
+    }
+  };
+
+  async function dump(){
+    const out = document.getElementById("out");
+    const info = {
+      online: navigator.onLine,
+      origin: location.origin,
+      token_present: !!localStorage.getItem("token"),
+      api_base: localStorage.getItem("API_BASE") || "http://127.0.0.1:8000",
+      sw_supported: "serviceWorker" in navigator,
+      caches_supported: "caches" in window,
+      idb_databases_supported: !!indexedDB.databases
+    };
+    out.textContent = JSON.stringify(info, null, 2);
+  }
+  dump();
+</script>
+</body>
+</html>
