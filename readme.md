@@ -1,4 +1,4 @@
-# Healthify
+# RuralReach
 
 **Problem Statement ID:** CS02HA
 **Team Name:** penguin.sh
