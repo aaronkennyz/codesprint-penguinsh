@@ -98,13 +98,19 @@ List all tools, frameworks, languages, and platforms used.
 - HTML, CSS, Vanilla JavaScript
 - PWA (Service Worker + Manifest)
 - IndexedDB (offline local cache + outbox queue)
+
+
 **Backend:**
 - Python (FastAPI)
 - JWT Authentication + RBAC
 - TOTP verification logic (RFC 6238)
+
+
 **Database:**
 - PostgreSQL
 - Alembic migrations
+
+
 **APIs / Libraries:**
 - `pyotp` (TOTP verification)
 - Fetch API for network calls
