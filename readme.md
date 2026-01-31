@@ -200,8 +200,10 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 cd ..\frontend
 
 python -m http.server 5173
-```
+
 
 ### Open in browser:
 
 http://127.0.0.1:5173/login.html
+
+```
