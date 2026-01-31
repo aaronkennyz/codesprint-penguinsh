@@ -197,6 +197,8 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 ### Terminal 2 (still venv):
 
+
+```
 cd ..\frontend
 
 python -m http.server 5173
